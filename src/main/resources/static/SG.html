@@ -1,0 +1,128 @@
+<!DOCTYPE html style="width: 100%; height: 100%" >
+<html lang="en" style="width: 100%; height: 100%">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>刮开有奖</title>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="x-rim-auto-match" content="none">
+    <script src="js/jquery.js"></script>
+    <script
+            src="https://code.jquery.com/jquery-3.5.1.min.js"
+            integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+            crossorigin="anonymous"></script>
+    <style type="text/css">
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            /*   color:#666 ;*/
+        }
+
+        .box {
+            width: 100%;
+            height: 100%;
+            background: url("img/ox.jpg") no-repeat;/*这是奖品的图片*/
+            background-size: 100% 100%;
+            position: absolute;
+            z-index: 1001;
+            /*margin: 0 auto;*/
+        }
+
+        #myCanvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* 设置翻页的背景色*/
+        .flipbook .page{
+            background-color: #e6d3ae;
+        }
+    </style>
+</head>
+<body style="width: 100%; height: 100%;">
+
+<!--刮层-->
+<div id="canve_box" class="box" style="/* display: none*/">
+    <div id="go" style="    width: 40%; height: 6%;position: absolute;z-index: 900; background-color:red;top: 80%;left: 30%;background: url('img/amon.jpg') ;background-size: 100% 100%;background-repeat: no-repeat; " ></div>
+    <canvas id="myCanvas" width="100" height="200" style="/*display: none*/"></canvas>
+</div>
+</body>
+<!--刮刮层-->
+<script type="text/javascript">
+    //刮图层
+    //设置画布的大小
+    $("#myCanvas").attr({width: $("body").width(), height: $("body").height()});
+    var myCanvas = document.getElementById("myCanvas");
+    var can = myCanvas.getContext("2d");
+    //获取当前画布的宽高
+    var X = myCanvas.width;
+    var Y = myCanvas.height;
+    var oImg = new Image();
+    //进行画布的图片
+    oImg.src = "img/ox.jpg";
+    oImg.onload = function () {
+        can.beginPath();
+        can.drawImage(oImg, 0, 0, X, Y);
+        can.closePath();
+    }
+    var device = /android|iphone|ipad|ipod|webos|iemobile|opear mini|linux/i.test(navigator.userAgent.toLowerCase());
+    var startEvtName = device ? "touchstart" : "mousedown";
+    var moveEvtName = device ? "touchmove" : "mousemove";
+    var endEvtName = device ? "touchend" : "mouseup";
+
+    /* 根据手指移动画线，使之变透明*/
+    function draw(event) {
+        var x = device ? event.touches[0].clientX : event.clientX;
+        var y = device ? event.touches[0].clientY : event.clientY;
+        //console.log(x,y);
+        can.beginPath();
+        can.globalCompositeOperation = "destination-out";
+        can.arc(x, y, 20, 0, Math.PI * 2, false);
+        can.fill();
+        can.closePath();
+    }
+    /* 增加触摸监听*/
+    //true  捕获 false  冒泡
+    myCanvas.addEventListener(startEvtName, function () {
+        myCanvas.addEventListener(moveEvtName, draw, false);
+    }, false);
+
+    myCanvas.addEventListener(endEvtName, function () {
+        myCanvas.removeEventListener(moveEvtName, draw, false);
+    }, false);
+
+    //扣除到一定程度,自己打开
+    /**
+     第五步要用到canvas像素点的获取
+     getImageData(int x,int y,int width,int height)：该方法获取canvas上从(x,y)点开始，宽为width、高为height的图片区域的数据，该方法返回的是一个CanvasPixelArray对象，该对象具有width、height、data等属性。data属性为一个数组，该数组每4个元素对应一个像素点。
+     **/
+    document.addEventListener(endEvtName, function () {
+        /* 获取imageData对象*/
+        var imageDate = can.getImageData(0, 0, myCanvas.width, myCanvas.height);
+        /* */
+        var allPX = imageDate.width * imageDate.height;
+
+        var iNum = 0;//记录刮开的像素点个数
+
+        for (var i = 0; i < allPX; i++) {
+            if (imageDate.data[i * 4 + 3] == 0) {
+                iNum++;
+            }
+        }
+        if (iNum >= allPX * 1 / 3) {
+            // disappear里面写了缓慢清除的css3动画效果
+            // myCanvas.setAttribute('class','disappear');
+            $("#myCanvas").hide();
+        }
+    }, false)
+
+</script>
+
+</html>

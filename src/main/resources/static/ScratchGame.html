@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page Title</title>
+</head>
+<style type="text/css">
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    img{
+        width: 400px;
+        height: 300px;
+        left: 200px;
+        position: absolute;
+        z-index: -1;
+    }
+    canvas{
+        margin-left:200px;
+    }
+</style>
+<script type="text/javascript">
+    function draw() {
+        var bg = document.getElementById("background");
+        bg.style.display = '';
+        var canvas = document.getElementById("canvas");
+        if (canvas.getContext) {
+            var context = canvas.getContext("2d");
+            //畫蒙布
+            context.beginPath();
+            context.fillStyle= 'grey'
+            context.fillRect(0,0,400,300);
+        }
+        //滑鼠按下開刮
+        canvas.onmousedown=function(){
+            canvas.onmousemove = function(){
+                //獲取滑鼠座標
+                var x = event.clientX;
+                var y = event.clientY;
+                //destination-out    顯示原來的不在後來區域的部分
+                context.globalCompositeOperation = "destination-out";
+                context.beginPath();
+                context.arc(x-200,y,30,0,Math.PI*2);
+                context.fill();
+            }
+        }
+        //滑鼠擡起不刮開
+        canvas.onmouseup=function(){
+            canvas.onmousemove = function(){
+            }
+        },
+
+        canvas.touchStart=function(e){
+            canvas.touchMove = function(e){
+                this.touch=e.targetTouches[0];
+                //獲取滑鼠座標
+                var x = this.touch.pageX-this.touch.offsetLeft;
+                var y = this.touch.pageY-this.touch.offsetTop;
+                //destination-out    顯示原來的不在後來區域的部分
+                context.globalCompositeOperation = "destination-out";
+                context.beginPath();
+                context.arc(x-200,y,30,0,Math.PI*2);
+                context.fill();
+            }
+        }
+
+        //滑鼠擡起不刮開
+        canvas.touchend=function(){
+            canvas.touchEnd = function(){
+            }
+        }
+    }
+
+
+</script>
+<body onload="draw();">
+<img src="img/ox.jpg" id="background" style="display:none">
+<canvas id="canvas" width="400" height="300" src="img/ox.jpg">
+<!--    ![](img/ox.jpg)-->
+</canvas>
+</body>
+</html>
