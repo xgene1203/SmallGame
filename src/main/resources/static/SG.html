@@ -1,4 +1,4 @@
-<!DOCTYPE html style="width: 100%; height: 100%" >
+<!DOCTYPE html>
 <html lang="en" style="width: 100%; height: 100%">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -10,10 +10,11 @@
     <meta name="format-detection" content="telephone=no">
     <meta http-equiv="x-rim-auto-match" content="none">
     <script src="js/jquery.js"></script>
-    <script
-            src="https://code.jquery.com/jquery-3.5.1.min.js"
-            integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
-            crossorigin="anonymous"></script>
+<!--    <script-->
+<!--            src="https://code.jquery.com/jquery-3.5.1.min.js"-->
+<!--&lt;!&ndash;            src="https://code.jquery.com/jquery-3.5.1.min.js"&ndash;&gt;-->
+<!--            integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="-->
+<!--            crossorigin="anonymous"></script>-->
     <style type="text/css">
 
 
@@ -26,7 +27,7 @@
         .box {
             width: 100%;
             height: 100%;
-            background: url("img/ox.jpg") no-repeat;/*这是奖品的图片*/
+            background: url("img/ox1.jpg") no-repeat;/*这是奖品的图片*/
             background-size: 100% 100%;
             position: absolute;
             z-index: 1001;
@@ -34,6 +35,7 @@
         }
 
         #myCanvas {
+            overflow: hidden;
             position: absolute;
             left: 0;
             top: 0;
@@ -46,16 +48,26 @@
         }
     </style>
 </head>
-<body style="width: 100%; height: 100%;">
+<body style="width: 100%; height: 100%;overflow: hidden;">
 
 <!--刮层-->
-<div id="canve_box" class="box" style="/* display: none*/">
-    <div id="go" style="    width: 40%; height: 6%;position: absolute;z-index: 900; background-color:red;top: 80%;left: 30%;background: url('img/amon.jpg') ;background-size: 100% 100%;background-repeat: no-repeat; " ></div>
+<div id="canve_box" class="box" style="overflow: hidden;/* display: none*/">
+<!--    恭喜您刮到新台幣 <div id="reward" style="font-size: medium;color: crimson">$1000</div>元-->
+    <div id="go" style="display: none;width: 90%; height: 65%;position: absolute;z-index: 900; background-color:red;top: 10%;left: 5%;background: url('img/amon.jpg') ;background-size: 100% 100%;background-repeat: no-repeat; " ></div>
     <canvas id="myCanvas" width="100" height="200" style="/*display: none*/"></canvas>
 </div>
 </body>
 <!--刮刮层-->
 <script type="text/javascript">
+    function getRandomInt(max) {
+        return Math.floor(Math.random() * Math.floor(max));
+    }
+
+    var rewardpool = [0, 0, 0, 0, 100, 100, 100, 100, 500, 1000];
+    var luckynum=getRandomInt(10);
+    var reward =rewardpool[luckynum];
+    // var reward =1000;
+    $("#reward").text(reward);
     //刮图层
     //设置画布的大小
     $("#myCanvas").attr({width: $("body").width(), height: $("body").height()});
@@ -65,8 +77,63 @@
     var X = myCanvas.width;
     var Y = myCanvas.height;
     var oImg = new Image();
-    //进行画布的图片
-    oImg.src = "img/ox.jpg";
+    oImg.src = "img/ox1.jpg";
+    if (reward === 1000) {
+        //进行画布的图片
+        $("#go").css({"width": "90%", "height": "65%",
+            "position": "absolute",
+            "z-index": "900",
+            "background-color":"red",
+            "top": "10%",
+            "left": "5%",
+            "background": "url('img/1000.jpg')",
+        "background-size": "100% 100%",
+        "background-repeat": "no-repeat"});
+    }else if (reward === 0) {
+        $("#go").css({
+            "width": "90%", "height": "65%",
+            "position": "absolute",
+            "z-index": "900",
+            "background-color": "red",
+            "display": "none",
+            "top": "10%",
+            "left": "5%",
+            "background": "url('img/turtle.jpg')",
+            "background-size": "100% 100%",
+            "background-repeat": "no-repeat"
+        });
+    } else if (reward === 100) {
+        let pic_100 = [101,102];
+        let pic = pic_100[getRandomInt(2)];
+        $("#go").css({
+            "width": "90%", "height": "65%",
+            "position": "absolute",
+            "z-index": "900",
+            "background-color": "red",
+            "display": "none",
+            "top": "10%",
+            "left": "5%",
+            "background": "url('img/"+pic+".jpg')",
+            "background-size": "100% 100%",
+            "background-repeat": "no-repeat"
+        });
+    }else if (reward === 500) {
+        let pic_100 = [500];
+        let pic = pic_100[getRandomInt(1)];
+        $("#go").css({
+            "width": "90%", "height": "65%",
+            "position": "absolute",
+            "z-index": "900",
+            "background-color": "red",
+            "display": "none",
+            "top": "10%",
+            "left": "5%",
+            "background": "url('img/"+pic+".jpg')",
+            "background-size": "100% 100%",
+            "background-repeat": "no-repeat"
+        });
+    } else {
+    }
     oImg.onload = function () {
         can.beginPath();
         can.drawImage(oImg, 0, 0, X, Y);
@@ -104,6 +171,7 @@
      getImageData(int x,int y,int width,int height)：该方法获取canvas上从(x,y)点开始，宽为width、高为height的图片区域的数据，该方法返回的是一个CanvasPixelArray对象，该对象具有width、height、data等属性。data属性为一个数组，该数组每4个元素对应一个像素点。
      **/
     document.addEventListener(endEvtName, function () {
+        $("#go").show();
         /* 获取imageData对象*/
         var imageDate = can.getImageData(0, 0, myCanvas.width, myCanvas.height);
         /* */
@@ -116,10 +184,11 @@
                 iNum++;
             }
         }
-        if (iNum >= allPX * 1 / 3) {
+        if (iNum >= allPX * 2 / 3) {
             // disappear里面写了缓慢清除的css3动画效果
             // myCanvas.setAttribute('class','disappear');
             $("#myCanvas").hide();
+            alert("恭喜您刮中新台幣:"+reward+"元!!!");
         }
     }, false)
 
